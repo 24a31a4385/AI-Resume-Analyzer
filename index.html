@@ -3,13 +3,62 @@
 <head>
     <title>AI Resume Analyzer</title>
     <style>
-        body { font-family: Arial; text-align: center; padding: 30px; }
-        textarea { width: 80%; height: 150px; }
-        button { padding: 10px; margin-top: 10px; }
-        .box { margin-top: 20px; }
-        p { white-space: pre-line; }
+        body {
+            font-family: Arial;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+        }
+
+        textarea {
+            width: 80%;
+            height: 150px;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .box {
+            margin-top: 20px;
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 15px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        p {
+            white-space: pre-line;
+        }
+
+        .progress {
+            width: 100%;
+            background: #ddd;
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: green;
+            width: 0%;
+            border-radius: 10px;
+        }
     </style>
 </head>
+
 <body>
 
 <h1>AI Resume Analyzer 🚀</h1>
@@ -18,6 +67,13 @@
 <button onclick="analyze()">Analyze</button>
 
 <div class="box">
+    <h3>Score:</h3>
+    <h2 id="score">0 / 100</h2>
+
+    <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
     <h3>Skills:</h3>
     <p id="skills"></p>
 
@@ -34,7 +90,7 @@
     <p id="interests"></p>
 
     <h3>Suggestions:</h3>
-    <p id="suggestions"></p>
+    <p id="suggestions" style="color:red;"></p>
 </div>
 
 <script>
@@ -42,43 +98,64 @@ function analyze() {
     let text = document.getElementById("resume").value;
     let lower = text.toLowerCase();
 
+    let score = 0;
+
     // Skills
     let skillsList = ["python","java","c++","ai","machine learning","sql","html","css","javascript"];
     let found = skillsList.filter(s => lower.includes(s));
     document.getElementById("skills").innerText = found.length ? found.join(", ") : "No skills";
 
-    // Sections
-    function getSection(words) {
-        for (let w of words) {
-            let i = lower.indexOf(w);
-            if (i !== -1) {
-                return text.substring(i, i + 200);
-            }
-        }
-        return "Not mentioned";
+    if (found.length >= 3) score += 20;
+
+    // Section function
+    function has(words) {
+        return words.some(w => lower.includes(w));
     }
 
-    document.getElementById("education").innerText =
-        getSection(["education","b.tech","degree"]);
+    // Education
+    if (has(["education","b.tech","degree"])) {
+        document.getElementById("education").innerText = "Education details found";
+        score += 20;
+    } else {
+        document.getElementById("education").innerText = "Not mentioned";
+    }
 
-    document.getElementById("projects").innerText =
-        getSection(["project"]);
+    // Projects
+    if (has(["project"])) {
+        document.getElementById("projects").innerText = "Projects found";
+        score += 20;
+    } else {
+        document.getElementById("projects").innerText = "Not mentioned";
+    }
 
-    document.getElementById("experience").innerText =
-        getSection(["experience","intern"]);
+    // Experience
+    if (has(["experience","intern"])) {
+        document.getElementById("experience").innerText = "Experience found";
+        score += 20;
+    } else {
+        document.getElementById("experience").innerText = "Not mentioned";
+    }
 
-    document.getElementById("interests").innerText =
-        getSection(["interest","hobby"]);
+    // Interests
+    if (has(["interest","hobby"])) {
+        document.getElementById("interests").innerText = "Interests found";
+        score += 20;
+    } else {
+        document.getElementById("interests").innerText = "Not mentioned";
+    }
+
+    // Score display
+    document.getElementById("score").innerText = score + " / 100";
+    document.getElementById("progressBar").style.width = score + "%";
 
     // Suggestions
     let sug = [];
 
-    if (!lower.includes("python")) sug.push("Add Python");
-    if (!lower.includes("project")) sug.push("Add projects");
-    if (!lower.includes("experience") && !lower.includes("intern")) sug.push("Add experience");
-    if (!lower.includes("education")) sug.push("Add education");
-    if (!lower.includes("interest")) sug.push("Add interests");
-    if (text.length < 150) sug.push("Resume too short");
+    if (!lower.includes("python")) sug.push("👉 Add Python");
+    if (!has(["project"])) sug.push("👉 Add projects");
+    if (!has(["experience","intern"])) sug.push("👉 Add experience");
+    if (!has(["education"])) sug.push("👉 Add education");
+    if (!has(["interest"])) sug.push("👉 Add interests");
 
     document.getElementById("suggestions").innerText =
         sug.length ? sug.join("\n") : "Great Resume ✅";
