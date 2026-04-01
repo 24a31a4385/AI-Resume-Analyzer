@@ -3,7 +3,7 @@
 ✨ A simple AI-based web app to analyze resumes and give suggestions.
 
 ## 🌐 Live Website
-🔗 [Click here to view project](https://your-username.github.io/AI-Resume-Analyzer/)
+🔗 [Click here to view project](https://24a31a4385.github.io/AI-Resume-Analyzer/)
 
 ## 🚀 Features
 ✔️ Skill Detection  
