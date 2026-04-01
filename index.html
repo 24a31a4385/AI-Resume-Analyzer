@@ -1,113 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AI Resume Analyzer</title>
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(to right, #667eea, #764ba2);
-            color: white;
-        }
-
-        textarea {
-            width: 80%;
-            height: 150px;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-        }
-
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            background: black;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .box {
-            margin-top: 20px;
-            background: white;
-            color: black;
-            padding: 20px;
-            border-radius: 15px;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        p {
-            white-space: pre-line;
-        }
-
-        .progress {
-            width: 100%;
-            background: #ddd;
-            border-radius: 10px;
-        }
-
-        .progress-bar {
-            height: 20px;
-            background: green;
-            width: 0%;
-            border-radius: 10px;
-        }
-    </style>
-</head>
-
-<body>
-
-<h1>AI Resume Analyzer 🚀</h1>
-
-<textarea id="resume" placeholder="Paste your resume here..."></textarea><br>
-<button onclick="analyze()">Analyze</button>
-
-<div class="box">
-    <h3>Score:</h3>
-    <h2 id="score">0 / 100</h2>
-
-    <div class="progress">
-        <div class="progress-bar" id="progressBar"></div>
-    </div>
-
-    <h3>Skills:</h3>
-    <p id="skills"></p>
-
-    <h3>Education:</h3>
-    <p id="education"></p>
-
-    <h3>Projects:</h3>
-    <p id="projects"></p>
-
-    <h3>Experience:</h3>
-    <p id="experience"></p>
-
-    <h3>Interests:</h3>
-    <p id="interests"></p>
-
-    <h3>Suggestions:</h3>
-    <p id="suggestions" style="color:red;"></p>
-</div>
-
 <script>
 function analyze() {
     let text = document.getElementById("resume").value;
     let lower = text.toLowerCase();
 
+    // Score initialization
     let score = 0;
 
-    // Skills
+    // Skills detection
     let skillsList = ["python","java","c++","ai","machine learning","sql","html","css","javascript"];
-    let found = skillsList.filter(s => lower.includes(s));
-    document.getElementById("skills").innerText = found.length ? found.join(", ") : "No skills";
+    let foundSkills = skillsList.filter(skill => lower.includes(skill));
+    document.getElementById("skills").innerText = foundSkills.length ? foundSkills.join(", ") : "No skills detected";
+    
+    if (foundSkills.length >= 3) score += 20;  // Skill weight
 
-    if (found.length >= 3) score += 20;
-
-    // Section function
+    // Section detection function
     function has(words) {
         return words.some(w => lower.includes(w));
     }
@@ -144,23 +50,18 @@ function analyze() {
         document.getElementById("interests").innerText = "Not mentioned";
     }
 
-    // Score display
+    // Display score
     document.getElementById("score").innerText = score + " / 100";
     document.getElementById("progressBar").style.width = score + "%";
 
     // Suggestions
-    let sug = [];
+    let suggestions = [];
+    if (!lower.includes("python")) suggestions.push("👉 Add Python");
+    if (!has(["project"])) suggestions.push("👉 Add projects");
+    if (!has(["experience","intern"])) suggestions.push("👉 Add experience");
+    if (!has(["education"])) suggestions.push("👉 Add education");
+    if (!has(["interest"])) suggestions.push("👉 Add interests");
 
-    if (!lower.includes("python")) sug.push("👉 Add Python");
-    if (!has(["project"])) sug.push("👉 Add projects");
-    if (!has(["experience","intern"])) sug.push("👉 Add experience");
-    if (!has(["education"])) sug.push("👉 Add education");
-    if (!has(["interest"])) sug.push("👉 Add interests");
-
-    document.getElementById("suggestions").innerText =
-        sug.length ? sug.join("\n") : "Great Resume ✅";
+    document.getElementById("suggestions").innerText = suggestions.length ? suggestions.join("\n") : "Great Resume ✅";
 }
 </script>
-
-</body>
-</html>
