@@ -1,110 +1,61 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AI Resume Analyzer</title>
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            padding: 30px;
-            background: #f5f5f5;
-        }
-        textarea {
-            width: 80%;
-            height: 150px;
-            padding: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            background: blue;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .box {
-            margin-top: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        h3 {
-            color: #333;
-        }
-    </style>
-</head>
-<body>
+<script>
+function analyze() {
+    let text = document.getElementById("resume").value;
+    let lowerText = text.toLowerCase();
 
-    <h1>AI Resume Analyzer 🚀</h1>
+    // Skills detection
+    let skills = ["python", "java", "c++", "ai", "machine learning", "sql", "html", "css", "javascript"];
+    let foundSkills = skills.filter(skill => lowerText.includes(skill));
 
-    <textarea id="resume" placeholder="Paste your resume here..."></textarea><br>
-    <button onclick="analyze()">Analyze</button>
+    document.getElementById("skills").innerText =
+        foundSkills.length > 0 ? foundSkills.join(", ") : "No skills detected";
 
-    <div class="box">
-        <h3>Skills Found:</h3>
-        <p id="skills"></p>
-
-        <h3>Education:</h3>
-        <p id="education" style="white-space: pre-line;"></p>
-
-        <h3>Projects:</h3>
-        <p id="projects" style="white-space: pre-line;"></p>
-
-        <h3>Experience:</h3>
-        <p id="experience" style="white-space: pre-line;"></p>
-
-        <h3>Interests:</h3>
-        <p id="interests" style="white-space: pre-line;"></p>
-
-        <h3>Suggestions:</h3>
-        <p id="suggestions" style="white-space: pre-line; color: red;"></p>
-    </div>
-
-    <script>
-        function analyze() {
-            let text = document.getElementById("resume").value;
-            let lowerText = text.toLowerCase();
-
-            // Skills
-            let skills = ["python", "java", "c++", "ai", "machine learning", "sql", "html", "css", "javascript"];
-            let foundSkills = skills.filter(skill => lowerText.includes(skill));
-            document.getElementById("skills").innerText = foundSkills.join(", ") || "No skills detected";
-
-            // Extract sections
-            function extractSection(keyword) {
-                let index = lowerText.indexOf(keyword);
-                if (index === -1) return "Not mentioned";
-                return text.substring(index, index + 200);
+    // Better section extraction
+    function extractSection(keywordList) {
+        for (let keyword of keywordList) {
+            let index = lowerText.indexOf(keyword);
+            if (index !== -1) {
+                return text.substring(index, index + 300);
             }
-
-            let education = extractSection("education");
-            let projects = extractSection("project");
-            let experience = extractSection("experience");
-            let interests = extractSection("interest");
-
-            document.getElementById("education").innerText = education;
-            document.getElementById("projects").innerText = projects;
-            document.getElementById("experience").innerText = experience;
-            document.getElementById("interests").innerText = interests;
-
-            // Suggestions
-            let suggestions = [];
-
-            if (!lowerText.includes("python")) suggestions.push("👉 Add Python skill");
-            if (!lowerText.includes("machine learning") && !lowerText.includes("ai")) {
-                suggestions.push("👉 Add AI or Machine Learning projects");
-            }
-            if (!lowerText.includes("project")) suggestions.push("👉 Add projects");
-            if (!lowerText.includes("experience")) suggestions.push("👉 Add experience");
-            if (!lowerText.includes("education")) suggestions.push("👉 Add education details");
-            if (!lowerText.includes("interest")) suggestions.push("👉 Add interests section");
-            if (!lowerText.includes("communication")) suggestions.push("👉 Add communication skills");
-            if (text.length < 200) suggestions.push("👉 Resume is too short, add more details");
-
-            document.getElementById("suggestions").innerText =
-                suggestions.join("\n") || "✅ Great resume!";
         }
-    </script>
+        return "Not mentioned";
+    }
 
-</body>
-</html>
+    let education = extractSection(["education", "b.tech", "degree"]);
+    let projects = extractSection(["project", "projects"]);
+    let experience = extractSection(["experience", "intern", "internship"]);
+    let interests = extractSection(["interest", "hobby", "hobbies"]);
+
+    document.getElementById("education").innerText = education;
+    document.getElementById("projects").innerText = projects;
+    document.getElementById("experience").innerText = experience;
+    document.getElementById("interests").innerText = interests;
+
+    // Suggestions (STRONG FIX)
+    let suggestions = [];
+
+    if (!lowerText.includes("python")) suggestions.push("👉 Add Python skill");
+    if (!lowerText.includes("machine learning") && !lowerText.includes("ai")) {
+        suggestions.push("👉 Add AI or Machine Learning projects");
+    }
+    if (!lowerText.includes("project")) suggestions.push("👉 Add projects section");
+    if (!lowerText.includes("experience") && !lowerText.includes("intern")) {
+        suggestions.push("👉 Add experience or internship");
+    }
+    if (!lowerText.includes("education") && !lowerText.includes("b.tech")) {
+        suggestions.push("👉 Add education details");
+    }
+    if (!lowerText.includes("interest") && !lowerText.includes("hobby")) {
+        suggestions.push("👉 Add interests section");
+    }
+    if (!lowerText.includes("communication")) {
+        suggestions.push("👉 Add communication skills");
+    }
+    if (text.trim().length < 150) {
+        suggestions.push("👉 Resume is too short, add more content");
+    }
+
+    document.getElementById("suggestions").innerText =
+        suggestions.length > 0 ? suggestions.join("\n") : "✅ Great resume!";
+}
+</script>
