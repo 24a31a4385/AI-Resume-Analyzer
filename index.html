@@ -1,61 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Resume Analyzer</title>
+    <style>
+        body { font-family: Arial; text-align: center; padding: 30px; }
+        textarea { width: 80%; height: 150px; }
+        button { padding: 10px; margin-top: 10px; }
+        .box { margin-top: 20px; }
+        p { white-space: pre-line; }
+    </style>
+</head>
+<body>
+
+<h1>AI Resume Analyzer 🚀</h1>
+
+<textarea id="resume" placeholder="Paste your resume here..."></textarea><br>
+<button onclick="analyze()">Analyze</button>
+
+<div class="box">
+    <h3>Skills:</h3>
+    <p id="skills"></p>
+
+    <h3>Education:</h3>
+    <p id="education"></p>
+
+    <h3>Projects:</h3>
+    <p id="projects"></p>
+
+    <h3>Experience:</h3>
+    <p id="experience"></p>
+
+    <h3>Interests:</h3>
+    <p id="interests"></p>
+
+    <h3>Suggestions:</h3>
+    <p id="suggestions"></p>
+</div>
+
 <script>
 function analyze() {
     let text = document.getElementById("resume").value;
-    let lowerText = text.toLowerCase();
+    let lower = text.toLowerCase();
 
-    // Skills detection
-    let skills = ["python", "java", "c++", "ai", "machine learning", "sql", "html", "css", "javascript"];
-    let foundSkills = skills.filter(skill => lowerText.includes(skill));
+    // Skills
+    let skillsList = ["python","java","c++","ai","machine learning","sql","html","css","javascript"];
+    let found = skillsList.filter(s => lower.includes(s));
+    document.getElementById("skills").innerText = found.length ? found.join(", ") : "No skills";
 
-    document.getElementById("skills").innerText =
-        foundSkills.length > 0 ? foundSkills.join(", ") : "No skills detected";
-
-    // Better section extraction
-    function extractSection(keywordList) {
-        for (let keyword of keywordList) {
-            let index = lowerText.indexOf(keyword);
-            if (index !== -1) {
-                return text.substring(index, index + 300);
+    // Sections
+    function getSection(words) {
+        for (let w of words) {
+            let i = lower.indexOf(w);
+            if (i !== -1) {
+                return text.substring(i, i + 200);
             }
         }
         return "Not mentioned";
     }
 
-    let education = extractSection(["education", "b.tech", "degree"]);
-    let projects = extractSection(["project", "projects"]);
-    let experience = extractSection(["experience", "intern", "internship"]);
-    let interests = extractSection(["interest", "hobby", "hobbies"]);
+    document.getElementById("education").innerText =
+        getSection(["education","b.tech","degree"]);
 
-    document.getElementById("education").innerText = education;
-    document.getElementById("projects").innerText = projects;
-    document.getElementById("experience").innerText = experience;
-    document.getElementById("interests").innerText = interests;
+    document.getElementById("projects").innerText =
+        getSection(["project"]);
 
-    // Suggestions (STRONG FIX)
-    let suggestions = [];
+    document.getElementById("experience").innerText =
+        getSection(["experience","intern"]);
 
-    if (!lowerText.includes("python")) suggestions.push("👉 Add Python skill");
-    if (!lowerText.includes("machine learning") && !lowerText.includes("ai")) {
-        suggestions.push("👉 Add AI or Machine Learning projects");
-    }
-    if (!lowerText.includes("project")) suggestions.push("👉 Add projects section");
-    if (!lowerText.includes("experience") && !lowerText.includes("intern")) {
-        suggestions.push("👉 Add experience or internship");
-    }
-    if (!lowerText.includes("education") && !lowerText.includes("b.tech")) {
-        suggestions.push("👉 Add education details");
-    }
-    if (!lowerText.includes("interest") && !lowerText.includes("hobby")) {
-        suggestions.push("👉 Add interests section");
-    }
-    if (!lowerText.includes("communication")) {
-        suggestions.push("👉 Add communication skills");
-    }
-    if (text.trim().length < 150) {
-        suggestions.push("👉 Resume is too short, add more content");
-    }
+    document.getElementById("interests").innerText =
+        getSection(["interest","hobby"]);
+
+    // Suggestions
+    let sug = [];
+
+    if (!lower.includes("python")) sug.push("Add Python");
+    if (!lower.includes("project")) sug.push("Add projects");
+    if (!lower.includes("experience") && !lower.includes("intern")) sug.push("Add experience");
+    if (!lower.includes("education")) sug.push("Add education");
+    if (!lower.includes("interest")) sug.push("Add interests");
+    if (text.length < 150) sug.push("Resume too short");
 
     document.getElementById("suggestions").innerText =
-        suggestions.length > 0 ? suggestions.join("\n") : "✅ Great resume!";
+        sug.length ? sug.join("\n") : "Great Resume ✅";
 }
 </script>
+
+</body>
+</html>
